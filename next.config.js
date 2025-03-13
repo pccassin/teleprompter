@@ -2,8 +2,8 @@
 const nextConfig = {
   output: 'export',
   basePath: '/teleprompter',
-  assetPrefix: '/teleprompter',
-  distDir: '.next',
+  assetPrefix: '/teleprompter/',
+  distDir: 'out',
   cleanDistDir: true,
   webpack: (config) => {
     config.resolve.alias = {
@@ -24,6 +24,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  trailingSlash: true,
 };
 
 module.exports = nextConfig;
