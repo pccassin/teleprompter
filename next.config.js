@@ -1,0 +1,29 @@
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'export',
+  basePath: '/teleprompter',
+  assetPrefix: '/teleprompter',
+  distDir: '.next',
+  cleanDistDir: true,
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': require('path').resolve(__dirname, 'src'),
+    };
+    return config;
+  },
+  images: {
+    unoptimized: true,
+  },
+  experimental: {
+    optimizePackageImports: ['react-icons'],
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+};
+
+module.exports = nextConfig;

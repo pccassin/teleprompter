@@ -1,0 +1,82 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+  actions: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          rm -rf node_modules
+          rm -f package-lock.json
+          npm install
+          npm install -D postcss-preset-env
+
+      - name: Create Tailwind config
+        run: |
+          cat > tailwind.config.js << EOL
+          /** @type {import('tailwindcss').Config} */
+          module.exports = {
+            content: [
+              './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+              './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+              './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+            ],
+            theme: {
+              extend: {
+                fontFamily: {
+                  inter: ['var(--font-inter)'],
+                  orbitron: ['var(--font-orbitron)'],
+                },
+              },
+            },
+            plugins: [],
+          }
+          EOL
+
+      - name: Create PostCSS config
+        run: |
+          cat > postcss.config.js << EOL
+          module.exports = {
+            plugins: {
+              tailwindcss: {},
+              autoprefixer: {},
+              'postcss-preset-env': {
+                features: { 'nesting-rules': false }
+              }
+            }
+          }
+          EOL
+
+      - name: Build Project
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          NODE_ENV: production
+          NEXT_PUBLIC_ENVIRONMENT: staging
+          NEXT_PUBLIC_BASE_PATH: /prompt-staging
+        run: |
+          npm run build
+          touch out/.nojekyll
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: out
+          branch: gh-pages-staging
+          clean: true
