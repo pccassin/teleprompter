@@ -21,7 +21,7 @@ interface TeleprompterProps {
 // Feature flag for PIP mode
 const ENABLE_PIP_MODE = true;
 
-export const Teleprompter: React.FC<TeleprompterProps> = ({ text }) => {
+export default function Teleprompter({ text }: TeleprompterProps) {
   const [isScrolling, setIsScrolling] = useState(false);
   const [speedLevel, setSpeedLevel] = useState(5); // 1-10 scale
   const [fontSize, setFontSize] = useState(32);
@@ -353,4 +353,4 @@ export const Teleprompter: React.FC<TeleprompterProps> = ({ text }) => {
       </div>
     </div>
   );
-};
+}
