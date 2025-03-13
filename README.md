@@ -1,51 +1,38 @@
 # Teleprompter
 
-A modern, web-based teleprompter for professional presentations. Built with Next.js, TypeScript, and Tailwind CSS.
+A modern web-based teleprompter for professional presentations.
+
+## Live Demo
+
+Visit the live application at: [https://pccassin.github.io/teleprompter](https://pccassin.github.io/teleprompter)
 
 ## Features
 
-- Clean and intuitive interface
-- Responsive design that works on all devices
-- Professional typography with custom fonts
-- Smooth text scrolling with adjustable speed
-- Play/pause and speed control
-- Easy to use text input
+- Real-time text scrolling
+- Adjustable scroll speed
+- Font size control
+- Picture-in-Picture (PIP) mode
+- Opacity control
+- Fast forward/backward controls
+- Mirror text effect
+- Responsive design
 
 ## Development
 
-1. Install dependencies:
+```bash
+# Install dependencies
+npm install
 
-   ```bash
-   npm install
-   ```
+# Run development server
+npm run dev
 
-2. Run the development server:
+# Build for production
+npm run build
 
-   ```bash
-   npm run dev
-   ```
+# Start production server
+npm start
+```
 
-3. Build for production:
+## License
 
-   ```bash
-   npm run build
-   ```
-
-4. Start the production server:
-   ```bash
-   npm start
-   ```
-
-## Deployment
-
-This application is automatically deployed to GitHub Pages when changes are pushed to the main branch.
-
-Live site: https://pccassin.github.io/teleprompter
-
-## Technologies Used
-
-- Next.js 14
-- React 18
-- TypeScript
-- Tailwind CSS
-- GitHub Pages
+MIT
