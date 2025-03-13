@@ -25,6 +25,7 @@ export default function Teleprompter({ text }: TeleprompterProps) {
   const [isScrolling, setIsScrolling] = useState(false);
   const [speedLevel, setSpeedLevel] = useState(5); // 1-10 scale
   const [fontSize, setFontSize] = useState(32);
+  const [lineHeight, setLineHeight] = useState(1.5);
   const [isPIPMode, setIsPIPMode] = useState(false);
   const [opacity, setOpacity] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,6 +55,7 @@ export default function Teleprompter({ text }: TeleprompterProps) {
 
       if (containerRef.current.scrollTop >= maxScroll) {
         setIsScrolling(false);
+        setIsPlaying(false);
         lastTimeRef.current = 0;
         return;
       }
@@ -139,6 +141,8 @@ export default function Teleprompter({ text }: TeleprompterProps) {
     if (containerRef.current) {
       containerRef.current.scrollTop = 0;
       setIsScrolling(false);
+      setIsPlaying(false);
+      setPosition(0);
       lastTimeRef.current = 0;
     }
   };
@@ -149,6 +153,10 @@ export default function Teleprompter({ text }: TeleprompterProps) {
 
   const adjustFontSize = (delta: number) => {
     setFontSize((prev) => Math.max(16, Math.min(72, prev + delta)));
+  };
+
+  const adjustLineHeight = (delta: number) => {
+    setLineHeight((prev) => Math.max(1, Math.min(3, prev + delta * 0.1)));
   };
 
   const adjustOpacity = (delta: number) => {
@@ -170,43 +178,9 @@ export default function Teleprompter({ text }: TeleprompterProps) {
     }
   };
 
-  useEffect(() => {
-    let animationFrameId: number;
-    let lastTime = 0;
-
-    const animate = (currentTime: number) => {
-      if (!isPlaying) return;
-
-      const deltaTime = currentTime - lastTime;
-      lastTime = currentTime;
-
-      if (containerRef.current) {
-        const maxScroll =
-          containerRef.current.scrollHeight - containerRef.current.clientHeight;
-        const newPosition = Math.min(
-          position + deltaTime * speedLevel * 0.05,
-          maxScroll
-        );
-        setPosition(newPosition);
-        containerRef.current.scrollTop = newPosition;
-      }
-
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    if (isPlaying) {
-      animationFrameId = requestAnimationFrame(animate);
-    }
-
-    return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-    };
-  }, [isPlaying, speedLevel, position]);
-
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
+    setIsScrolling(!isPlaying);
   };
 
   const handleFastForward = () => {
@@ -268,6 +242,13 @@ export default function Teleprompter({ text }: TeleprompterProps) {
           >
             <FaFastForward />
           </button>
+          <button
+            onClick={resetScroll}
+            className="p-2 rounded-full bg-gray-600 hover:bg-gray-700 transition-colors"
+            title="Reset"
+          >
+            <FaUndo />
+          </button>
           <div className="flex items-center space-x-2">
             <button
               onClick={() => adjustSpeed(-1)}
@@ -300,6 +281,25 @@ export default function Teleprompter({ text }: TeleprompterProps) {
               title="Increase Font Size"
             >
               <MdTextIncrease />
+            </button>
+          </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => adjustLineHeight(-0.1)}
+              className="p-2 rounded-full bg-gray-600 hover:bg-gray-700 transition-colors"
+              title="Decrease Line Height"
+            >
+              <FaMinus />
+            </button>
+            <span className="min-w-[3rem] text-center">
+              {lineHeight.toFixed(1)}
+            </span>
+            <button
+              onClick={() => adjustLineHeight(0.1)}
+              className="p-2 rounded-full bg-gray-600 hover:bg-gray-700 transition-colors"
+              title="Increase Line Height"
+            >
+              <FaPlus />
             </button>
           </div>
           {ENABLE_PIP_MODE && (
@@ -345,7 +345,12 @@ export default function Teleprompter({ text }: TeleprompterProps) {
           <div
             ref={contentRef}
             className="whitespace-pre-wrap p-4"
-            style={{ fontSize: `${fontSize}px`, lineHeight: '1.5' }}
+            style={{
+              fontSize: `${fontSize}px`,
+              lineHeight: lineHeight,
+              transition:
+                'font-size 0.2s ease-in-out, line-height 0.2s ease-in-out',
+            }}
           >
             {text}
           </div>
